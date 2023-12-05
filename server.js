@@ -11,8 +11,9 @@ const app = express();
 
 app.use(
   cors({
-    origin: "*",
-    methods: "*",
+    origin: ["https://shoponn.netlify.app", "http://localhost:5173"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
   })
 );
 app.use(express.json());
@@ -26,5 +27,5 @@ mongoose
   .then(() => console.log("Connected to mongodb"))
   .catch((e) => console.log(e));
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
