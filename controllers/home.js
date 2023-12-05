@@ -50,4 +50,20 @@ const deleteItem = async (req, res) => {
   }
 };
 
-module.exports = { addItem, getItem, getItems, deleteItem, updateItem };
+const addToCart = async (req, res) => {
+  try {
+    await Items.findOneAndUpdate({ _id: req.query.id }, { addedToCart: true });
+    return res.json({ success: true });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+module.exports = {
+  addItem,
+  getItem,
+  getItems,
+  deleteItem,
+  updateItem,
+  addToCart,
+};
