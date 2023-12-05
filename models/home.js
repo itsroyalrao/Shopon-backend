@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 
 const itemSchema = new mongoose.Schema({
+  // userID: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: "USER",
+  //   required: true,
+  // },
   title: {
     type: String,
     required: true,
@@ -16,14 +21,6 @@ const itemSchema = new mongoose.Schema({
   description: {
     type: String,
     default: null,
-  },
-  admin: {
-    type: Boolean,
-    default: false,
-  },
-  addedToCart: {
-    type: Boolean,
-    default: false,
   },
 });
 
