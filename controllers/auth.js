@@ -39,16 +39,19 @@ const getUser = async (req, res) => {
   }
 };
 
-const logoutUser = async (req, res) => {
+const addToCart = async (req, res) => {
   try {
-    await Auth.findOneAndUpdate(
-      { email: req.query.email },
-      { loggedIn: false }
-    );
-    res.json({ success: true });
+    const { id, user } = req.body;
+    const items = await Auth.findOne({ email: user });
+    console.log(items);
+
+    items.cart.items = { itemID: id, quantity: 1 };
+    await Auth.findOneAndUpdate({ email: user }, { cart: items.cart.items });
+    console.log(items);
+    res.json({ success: true, items });
   } catch (e) {
     console.log(e);
   }
 };
 
-module.exports = { addUser, getUser, logoutUser };
+module.exports = { addUser, getUser, addToCart };
