@@ -9,6 +9,10 @@ const cartSchema = new mongoose.Schema({
     type: Number,
     default: 1,
   },
+  user: {
+    type: String,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("CART", cartSchema);
