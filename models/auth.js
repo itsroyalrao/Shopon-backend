@@ -15,16 +15,8 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
   cart: {
-    items: [
-      {
-        itemID: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "ITEM",
-          required: true,
-        },
-        quantity: { type: Number, required: true },
-      },
-    ],
+    type: Array,
+    default: null,
   },
   orders: {
     type: Array,

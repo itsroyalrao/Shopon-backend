@@ -41,39 +41,33 @@ const getUser = async (req, res) => {
 
 const addToCart = async (req, res) => {
   try {
-    const { id, user } = req.body;
+    const { user, id, title, imageURL, price, description } = req.body;
     const items = await Auth.findOne({ email: user });
 
-    if (items.cart.items.length) {
-      const cartItems = items.cart.items;
-      for (let i = 0; i < cartItems.length; i++) {
-        if (cartItems[i].itemID.toString() === id) {
-          cartItems[i].quantity++;
-          await Auth.findOneAndUpdate(
-            { email: user },
-            {
-              cart: {
-                items: items.cart.items,
-              },
-            }
-          );
-          return res.json({ success: true, items });
-        } else if (i === cartItems.length - 1) {
-          cartItems.push({ itemID: id, quantity: 1 });
-          await Auth.findOneAndUpdate(
-            { email: user },
-            { cart: { items: items.cart.items } }
-          );
-          return res.json({ success: true, items });
+    if (items.cart.length) {
+      let bool = true;
+      items.cart.forEach((item) => {
+        if (item.id === id) {
+          bool = false;
+          item.quantity++;
         }
+      });
+      if (bool) {
+        items.cart.push({
+          id,
+          title,
+          imageURL,
+          price,
+          description,
+          quantity: 1,
+        });
       }
+      await Auth.findOneAndUpdate({ email: user }, { cart: items.cart });
     } else {
-      await Auth.findOneAndUpdate(
-        { email: user },
-        { cart: { items: [{ itemID: id, quantity: 1 }] } }
-      );
-      return res.json({ success: true, items });
+      items.cart.push({ id, title, imageURL, price, description, quantity: 1 });
+      await Auth.findOneAndUpdate({ email: user }, { cart: items.cart });
     }
+
     res.json({ success: true, items });
   } catch (e) {
     console.log(e);
@@ -85,41 +79,112 @@ const getCartItems = async (req, res) => {
     const { user } = req.query;
     const items = await Auth.findOne({ email: user });
 
-    // if (items.cart.items.length) {
-    //   const cartItems = items.cart.items;
-    //   for (let i = 0; i < cartItems.length; i++) {
-    //     if (cartItems[i].itemID.toString() === id) {
-    //       cartItems[i].quantity++;
-    //       await Auth.findOneAndUpdate(
-    //         { email: user },
-    //         {
-    //           cart: {
-    //             items: items.cart.items,
-    //           },
-    //         }
-    //       );
-    //       return res.json({ success: true, items });
-    //     } else if (i === cartItems.length - 1) {
-    //       cartItems.push({ itemID: id, quantity: 1 });
-    //       await Auth.findOneAndUpdate(
-    //         { email: user },
-    //         { cart: { items: items.cart.items } }
-    //       );
-    //       return res.json({ success: true, items });
-    //     }
-    //   }
-    // } else {
-    //   await Auth.findOneAndUpdate(
-    //     { email: user },
-    //     { cart: { items: [{ itemID: id, quantity: 1 }] } }
-    //   );
-    //   return res.json({ success: true, items });
-    // }
-
-    res.json({ success: true, items: items.cart.items });
+    res.json({ success: true, items: items.cart });
   } catch (e) {
     console.log(e);
   }
 };
 
-module.exports = { addUser, getUser, addToCart, getCartItems };
+const decreaseQuantity = async (req, res) => {
+  try {
+    const { user, id } = req.body;
+    const items = await Auth.findOne({ email: user });
+
+    items.cart.forEach(async (item) => {
+      if (item.id === id) {
+        if (item.quantity > 1) {
+          item.quantity--;
+          await Auth.findOneAndUpdate({ email: user }, { cart: items.cart });
+        } else {
+          await Auth.findOneAndUpdate({ email: user }, { cart: [] });
+        }
+      }
+    });
+
+    return res.json({ success: true });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const removeFromCart = async (req, res) => {
+  try {
+    const user = await Auth.findOne({ email: req.query.user });
+
+    const cartItems = [];
+    user.cart.forEach((item) => {
+      if (item.id !== req.query.id) {
+        cartItems.push(item);
+      }
+    });
+    await Auth.findOneAndUpdate({ email: req.query.user }, { cart: cartItems });
+    return res.json({ success: true });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const addOrders = async (req, res) => {
+  try {
+    const { user, items } = req.body;
+    await Auth.findOneAndUpdate({ email: user }, { orders: items });
+    return res.json({ success: true });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const getOrderedItems = async (req, res) => {
+  try {
+    const { user } = req.query;
+    const items = await Auth.findOne({ email: user });
+
+    res.json({ success: true, orders: items.orders });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const cancelOrder = async (req, res) => {
+  try {
+    const { user, id } = req.query;
+    const orders = await Auth.findOne({ email: user });
+
+    const orderedItems = [];
+    orders.orders.forEach((order) => {
+      if (order.id !== id) {
+        orderedItems.push(order);
+      }
+    });
+    await Auth.findOneAndUpdate(
+      { email: req.query.user },
+      { orders: orderedItems }
+    );
+
+    res.json({ success: true, orders: orders.orders });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const emptyCart = async (req, res) => {
+  try {
+    await Auth.findOneAndUpdate({ email: req.query.user }, { cart: [] });
+    return res.json({ success: true });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+module.exports = {
+  addUser,
+  getUser,
+  addToCart,
+  getCartItems,
+  decreaseQuantity,
+  removeFromCart,
+  addOrders,
+  getOrderedItems,
+  cancelOrder,
+  emptyCart,
+};
