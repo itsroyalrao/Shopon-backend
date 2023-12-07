@@ -2,8 +2,8 @@ const Items = require("../models/home");
 
 const addItem = async (req, res) => {
   try {
-    const { title, imageURL, price, description } = req.body;
-    await Items.create({ title, imageURL, price, description });
+    const { user, title, imageURL, price, description } = req.body;
+    await Items.create({ title, imageURL, price, description, userID: user });
     return res.json({ success: true });
   } catch (e) {
     console.log(e);
