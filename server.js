@@ -20,6 +20,7 @@ app.use(express.json());
 app.use("/auth", authRoutes);
 app.use("/", homeRoutes);
 
+mongoose.set("strictQuery", false);
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("Connected to mongodb"))
