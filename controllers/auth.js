@@ -111,6 +111,24 @@ const getCartItems = async (req, res) => {
   }
 };
 
+const increaseQuantity = async (req, res) => {
+  try {
+    const { user, id } = req.body;
+    const items = await Auth.findOne({ email: user });
+
+    items.cart.forEach(async (item) => {
+      if (item.id === id) {
+        item.quantity++;
+        await Auth.findOneAndUpdate({ email: user }, { cart: items.cart });
+      }
+    });
+
+    return res.json({ success: true });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 const decreaseQuantity = async (req, res) => {
   try {
     const { user, id } = req.body;
@@ -220,6 +238,7 @@ module.exports = {
   getUser,
   addToCart,
   getCartItems,
+  increaseQuantity,
   decreaseQuantity,
   removeFromCart,
   addOrders,

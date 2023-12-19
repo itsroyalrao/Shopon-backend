@@ -6,6 +6,7 @@ const {
   getUser,
   addToCart,
   getCartItems,
+  increaseQuantity,
   decreaseQuantity,
   removeFromCart,
   addOrders,
@@ -21,6 +22,7 @@ router.route("/cookies").get(setCookies);
 router.route("/signup").post(addUser);
 router.route("/login").post(getUser);
 router.route("/cart").post(addToCart).get(getCartItems).delete(emptyCart);
+router.route("/cart/increase").post(increaseQuantity);
 router.route("/cart/decrease").post(decreaseQuantity);
 router.route("/cart/remove").delete(removeFromCart);
 router.route("/userdetails").get(getUserDetails);
