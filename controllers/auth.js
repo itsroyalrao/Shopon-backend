@@ -170,8 +170,8 @@ const removeFromCart = async (req, res) => {
 
 const addOrders = async (req, res) => {
   try {
-    const { user, items } = req.body;
-    await Auth.findOneAndUpdate({ email: user }, { orders: items });
+    const { email, items } = req.body;
+    await Auth.findOneAndUpdate({ email }, { orders: items });
     return res.json({ success: true });
   } catch (e) {
     console.log(e);
