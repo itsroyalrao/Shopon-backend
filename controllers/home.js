@@ -21,7 +21,13 @@ const getItem = async (req, res) => {
 
 const getItems = async (req, res) => {
   try {
-    const items = await Items.find({});
+    const { email } = req.query;
+    let items;
+    if (email) {
+      items = await Items.find({ userID: email });
+    } else {
+      items = await Items.find({});
+    }
     if (items.length) return res.json({ success: true, items });
     else return res.json({ success: false });
   } catch (e) {

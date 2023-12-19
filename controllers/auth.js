@@ -202,6 +202,17 @@ const emptyCart = async (req, res) => {
   }
 };
 
+const getUserDetails = async (req, res) => {
+  try {
+    const user = await Auth.findOne({ email: req.query.email });
+    if (user)
+      return res.json({ success: true, user: { username: user.username } });
+    else return res.json({ success: false });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 module.exports = {
   setCookies,
   isAuthorized,
@@ -215,4 +226,5 @@ module.exports = {
   getOrderedItems,
   cancelOrder,
   emptyCart,
+  getUserDetails,
 };
