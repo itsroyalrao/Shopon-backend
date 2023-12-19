@@ -22,7 +22,8 @@ const getItem = async (req, res) => {
 const getItems = async (req, res) => {
   try {
     const items = await Items.find({});
-    return res.json({ success: true, items });
+    if (items.length) return res.json({ success: true, items });
+    else return res.json({ success: false });
   } catch (e) {
     console.log(e);
   }

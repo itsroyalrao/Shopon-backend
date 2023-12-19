@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
     type: Array,
     default: null,
   },
+  loggedIn: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 module.exports = mongoose.model("USER", userSchema);

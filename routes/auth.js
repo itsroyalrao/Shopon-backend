@@ -1,6 +1,7 @@
 const express = require("express");
 
 const {
+  setCookies,
   addUser,
   getUser,
   addToCart,
@@ -15,6 +16,7 @@ const {
 
 const router = express.Router();
 
+router.route("/cookies").get(setCookies);
 router.route("/signup").post(addUser);
 router.route("/login").post(getUser);
 router.route("/cart").post(addToCart).get(getCartItems).delete(emptyCart);

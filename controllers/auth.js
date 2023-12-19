@@ -1,5 +1,31 @@
 const bcrypt = require("bcrypt");
 const Auth = require("../models/auth.js");
+const jwt = require("jsonwebtoken");
+
+const setCookies = async (req, res) => {
+  const { email } = req.query;
+
+  const accessToken = jwt.sign({ email }, "jwt-access-token-secret-key", {
+    expiresIn: "24h",
+  });
+  const refreshToken = jwt.sign({ email }, "jwt-refresh-token-secret-key", {
+    expiresIn: "24h",
+  });
+  res.json({ success: true, tokens: { accessToken, refreshToken } });
+};
+
+const isAuthorized = async (req, res) => {
+  const { accessToken } = req.body;
+
+  jwt.verify(accessToken, "jwt-access-token-secret-key", (err, decoded) => {
+    if (err) {
+      return res.json({ success: false });
+    } else {
+      req.email = decoded.email;
+      return res.json({ success: true, email: decoded.email });
+    }
+  });
+};
 
 const addUser = async (req, res) => {
   try {
@@ -177,6 +203,8 @@ const emptyCart = async (req, res) => {
 };
 
 module.exports = {
+  setCookies,
+  isAuthorized,
   addUser,
   getUser,
   addToCart,

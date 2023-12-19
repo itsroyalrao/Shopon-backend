@@ -2,12 +2,15 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 
 const homeRoutes = require("./routes/home");
 const authRoutes = require("./routes/auth");
 
 const app = express();
 
+app.use(express.json());
+app.use(cookieParser());
 app.use(
   cors({
     origin: ["https://shoponn.netlify.app", "http://localhost:5173"],
@@ -15,7 +18,6 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.json());
 
 app.use("/auth", authRoutes);
 app.use("/", homeRoutes);
