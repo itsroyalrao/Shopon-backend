@@ -29,4 +29,4 @@ mongoose
   .catch((e) => console.log(e));
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+app.listen(port, () => console.log(`Server is listening on port ${port}!`));
