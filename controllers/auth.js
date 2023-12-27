@@ -105,7 +105,8 @@ const getCartItems = async (req, res) => {
     const { user } = req.query;
     const items = await Auth.findOne({ email: user });
 
-    res.json({ success: true, items: items.cart });
+    if (items.cart.length) res.json({ success: true, items: items.cart });
+    else res.json({ success: false });
   } catch (e) {
     console.log(e);
   }
