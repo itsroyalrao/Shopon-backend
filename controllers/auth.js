@@ -70,7 +70,7 @@ const addToCart = async (req, res) => {
     const { user, id, title, imageURL, price, description } = req.body;
     const items = await Auth.findOne({ email: user });
 
-    if (items.cart.length) {
+    if (items.cart) {
       let bool = true;
       items.cart.forEach((item) => {
         if (item.id === id) {
@@ -90,8 +90,8 @@ const addToCart = async (req, res) => {
       }
       await Auth.findOneAndUpdate({ email: user }, { cart: items.cart });
     } else {
-      items.cart.push({ id, title, imageURL, price, description, quantity: 1 });
-      await Auth.findOneAndUpdate({ email: user }, { cart: items.cart });
+      const cart = [{ id, title, imageURL, price, description, quantity: 1 }];
+      await Auth.findOneAndUpdate({ email: user }, { cart });
     }
 
     res.json({ success: true, items });
@@ -105,7 +105,7 @@ const getCartItems = async (req, res) => {
     const { user } = req.query;
     const items = await Auth.findOne({ email: user });
 
-    if (items.cart.length) res.json({ success: true, items: items.cart });
+    if (items.cart) res.json({ success: true, items: items.cart });
     else res.json({ success: false });
   } catch (e) {
     console.log(e);
@@ -141,7 +141,7 @@ const decreaseQuantity = async (req, res) => {
           item.quantity--;
           await Auth.findOneAndUpdate({ email: user }, { cart: items.cart });
         } else {
-          await Auth.findOneAndUpdate({ email: user }, { cart: [] });
+          await Auth.findOneAndUpdate({ email: user }, { cart: null });
         }
       }
     });
@@ -163,6 +163,15 @@ const removeFromCart = async (req, res) => {
       }
     });
     await Auth.findOneAndUpdate({ email: req.query.user }, { cart: cartItems });
+    return res.json({ success: true });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const emptyCart = async (req, res) => {
+  try {
+    await Auth.findOneAndUpdate({ email: req.query.user }, { cart: null });
     return res.json({ success: true });
   } catch (e) {
     console.log(e);
@@ -207,15 +216,6 @@ const cancelOrder = async (req, res) => {
     );
 
     res.json({ success: true, orders: orders.orders });
-  } catch (e) {
-    console.log(e);
-  }
-};
-
-const emptyCart = async (req, res) => {
-  try {
-    await Auth.findOneAndUpdate({ email: req.query.user }, { cart: [] });
-    return res.json({ success: true });
   } catch (e) {
     console.log(e);
   }
